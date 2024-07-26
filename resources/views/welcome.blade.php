@@ -113,7 +113,7 @@
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <h5 class="modal-title" id="addProductModalLabel">Sửa sản phẩm <span
-                                            class="text-danger">{{ $item->name }}</span></h5>
+                                            class="text-danger">{{ $item->product_name }}</span></h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal"
                                         aria-label="Close"></button>
                                 </div>
@@ -125,7 +125,7 @@
                                         <div class="mb-3">
                                             <label for="name" class="form-label">Tên Sản Phẩm</label>
                                             <input type="text" class="form-control" id="name"
-                                                value="{{ $item->name }}" name="name" required>
+                                                value="{{ $item->product_name }}" name="name" required>
                                         </div>
                                         <div class="mb-3">
                                             <label for="description" class="form-label">Mô Tả</label>
@@ -193,7 +193,7 @@
             </tbody>
         </table>
         <div class="d-flex justify-content-end">
-            {{ $listProduct->links('pagination::bootstrap-5') }}
+            {{ $listProduct->appends(['product_name' => request('product_name')])->links('pagination::bootstrap-5') }}
         </div>
     </div>
 
