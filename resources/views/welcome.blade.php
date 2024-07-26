@@ -10,8 +10,6 @@
 </head>
 
 <body>
-
-
     <div class="container mt-3">
         <h2 class="text-center">Danh sách các sản phẩm</h2>
         @if (session('success'))
@@ -25,7 +23,8 @@
             </button>
             <div class="d-flex">
                 <form class="d-flex align-items-center search-container" action="{{ route('search.product') }}">
-                    <input class="form-control me-2" type="text" name="product_name" id="" placeholder="Tìm kiếm sản phẩm">
+                    <input class="form-control me-2" type="text" name="product_name" id=""
+                        placeholder="Tìm kiếm sản phẩm">
                     <button class="btn btn-info">Tìm kiếm</button>
                 </form>
             </div>
@@ -38,7 +37,7 @@
                         <h5 class="modal-title" id="addProductModalLabel">Thêm Sản Phẩm</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <form id="form_file" action="{{ route('store.product') }}" method="POST"
+                    <form id="form_file_add" action="{{ route('store.product') }}" method="POST"
                         enctype="multipart/form-data">
                         @csrf
                         <div class="modal-body">
@@ -48,16 +47,15 @@
                             </div>
                             <div class="mb-3">
                                 <label for="description" class="form-label">Mô Tả</label>
-                                <textarea class="form-control" name="description" rows="3" required></textarea>
+                                <textarea class="form-control" id="description" name="description" rows="3"></textarea>
                             </div>
                             <div class="mb-3">
                                 <label for="price" class="form-label">Giá</label>
-                                <input type="number" class="form-control" id="price" name="price" step="0.01"
-                                    required>
+                                <input type="number" class="form-control" id="price" name="price" required>
                             </div>
                             <div class="mb-3">
                                 <label for="images" class="form-label">Hình Ảnh</label>
-                                <input type="file" class="form-control" id="images" name="images" required>
+                                <input type="file" class="form-control" id="fileInput" name="images" required>
                             </div>
 
                             <div>
@@ -95,7 +93,7 @@
                         <td>{{ $key + 1 }}</td>
                         <td>{{ $item->product_name }}</td>
                         <td><img style="height: 50px" src="{{ asset($item->images) }}" alt=""></td>
-                        <td>{{ $item->description }}</td>
+                        <td>{!! $item->description !!}</td>
                         <td class="sumMoney">{{ $item->price }}</td>
                         <td>{{ $item->category_name }}</td>
                         <td>
@@ -119,7 +117,7 @@
                                     <button type="button" class="btn-close" data-bs-dismiss="modal"
                                         aria-label="Close"></button>
                                 </div>
-                                <form action="{{ route('update.product') }}" method="POST"
+                                <form id="form_update" action="{{ route('update.product') }}" method="POST"
                                     enctype="multipart/form-data">
                                     @csrf
                                     <input type="hidden" name="product_id" value="{{ $item->product_id }}">
@@ -131,18 +129,19 @@
                                         </div>
                                         <div class="mb-3">
                                             <label for="description" class="form-label">Mô Tả</label>
-                                            <textarea class="form-control" name="description" rows="3" required>
+                                            <textarea class="form-control description_update" id="description_update_{{ $item->product_id }}" name="description"
+                                                rows="3">
                                     {{ $item->description }}
                                 </textarea>
                                         </div>
                                         <div class="mb-3">
                                             <label for="price" class="form-label">Giá</label>
                                             <input type="number" class="form-control" value="{{ $item->price }}"
-                                                id="price" name="price" step="0.01" required>
+                                                id="price_update" name="price" step="0.01" required>
                                         </div>
                                         <div class="mb-3">
                                             <label for="images" class="form-label">Hình Ảnh</label>
-                                            <input type="file" class="form-control" id="images"
+                                            <input type="file" class="form-control" id="inputFileUpdate"
                                                 name="images">
                                             <img style="height: 88px" src="{{ asset($item->images) }}"
                                                 alt="">
@@ -175,7 +174,8 @@
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <h5 class="modal-title" id="addProductModalLabel">Bạn có chắc chắn xóa sản phẩm
-                                        <span class="text-danger">{{ $item->name }}</span></h5>
+                                        <span class="text-danger">{{ $item->name }}</span>
+                                    </h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal"
                                         aria-label="Close"></button>
                                 </div>
@@ -199,7 +199,46 @@
 
 
 </body>
+
 <script src="https://cdn.ckeditor.com/ckeditor5/34.2.0/classic/ckeditor.js"></script>
+
+<script>
+    document.getElementById('form_file_add').addEventListener('submit', function(event) {
+        var fileInput = document.getElementById('fileInput');
+        var file = fileInput.files[0];
+        var allowedExtensions = /(\.jpg|\.jpeg|\.png|\.gif)$/i;
+        if (!allowedExtensions.exec(file.name)) {
+            alert('Chỉ được phép tải lên các file ảnh có định dạng: .jpg, .jpeg, .png, .gif');
+            event.preventDefault();
+        }
+
+        var price = document.getElementById('price').value;
+        if (price <= 0) {
+            alert('Gía tiền sản phầm phải > 0 ');
+            event.preventDefault();
+        }
+    });
+</script>
+
+<script>
+    document.getElementById('form_update').addEventListener('submit', function(event) {
+        var fileInput = document.getElementById('inputFileUpdate');
+        var file = fileInput.files[0];
+        var allowedExtensions = /(\.jpg|\.jpeg|\.png|\.gif)$/i;
+        if (!allowedExtensions.exec(file.name)) {
+            alert('Chỉ được phép tải lên các file ảnh có định dạng: .jpg, .jpeg, .png, .gif');
+            event.preventDefault();
+        }
+
+        var price = document.getElementById('price_update').value;
+        if (price <= 0) {
+            alert('Gía tiền sản phầm phải > 0 ');
+            event.preventDefault();
+        }
+    });
+</script>
+
+
 <script>
     ClassicEditor
         .create(document.querySelector('#description'), {
@@ -210,18 +249,18 @@
         .catch(error => {
             console.error(error);
         });
-</script>
 
-<script>
-    document.getElementById('form_file').addEventListener('submit', function(event) {
-        var fileInput = document.querySelector('input[type="file"]');
-        var file = fileInput.files[0];
-        var allowedExtensions = /(\.jpg|\.jpeg|\.png|\.gif)$/i;
-
-        if (!allowedExtensions.exec(file.name)) {
-            alert('Chỉ được phép tải lên các file ảnh có định dạng: .jpg, .jpeg, .png, .gif');
-            event.preventDefault();
-        }
+    const descriptionElements = document.querySelectorAll('.description_update');
+    descriptionElements.forEach((element) => {
+        ClassicEditor
+            .create(element, {
+                ckfinder: {
+                    uploadUrl: "{{ route('store_ckeditor_images', ['_token' => csrf_token()]) }}"
+                }
+            })
+            .catch(error => {
+                console.error('Có lỗi xảy ra khi khởi tạo CKEditor:', error);
+            });
     });
 </script>
 

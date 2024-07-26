@@ -14,7 +14,8 @@ class ProductController extends Controller
     {
         $listProduct = ProductModel::join('category', 'category.id', '=', 'product.category_id')
             ->select('product.*', 'category.*', 'product.name as product_name', 'product.id as product_id', 'category.name as category_name')
-            ->paginate(4);
+            ->orderby('product.created_at','desc')
+            ->paginate(5);
         $category = CategoryModel::all();
         return view('welcome', [
             'listProduct' => $listProduct,
